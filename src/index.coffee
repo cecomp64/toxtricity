@@ -17,5 +17,7 @@ client.on("messageReactionAdd", (messageReaction, user) =>
   reactor = messageReaction.users.first()
   emoji = messageReaction.emoji.name
 
+  console.log("messageReactionAdd")
+
   messageReaction.message.channel.send("Reaction of ${emoji} from ${reactor.username} on ${author.username}'s message!")
 )
