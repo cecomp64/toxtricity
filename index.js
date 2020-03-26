@@ -24,7 +24,7 @@
     author = messageReaction.message.author;
     reactor = messageReaction.users.first();
     emoji = messageReaction.emoji.name;
-    return messageReaction.message.channel.send(Reaction of ${emoji} from ${reactor.username} on ${author.username}'s message!');
+    return messageReaction.message.channel.send("Reaction of ${emoji} from ${reactor.username} on ${author.username}'s message!");
   });
 
 }).call(this);
