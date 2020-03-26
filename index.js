@@ -24,7 +24,7 @@
     author = messageReaction.message.author;
     emoji = messageReaction.emoji.name;
     console.log("messageReactionAdd");
-    return messageReaction.message.channel.send("Reaction of ${emoji} from ${user.username} on ${author.username}'s message!");
+    return messageReaction.message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
   });
 
   client.on("message", (message) => {

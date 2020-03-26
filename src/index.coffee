@@ -18,7 +18,7 @@ client.on("messageReactionAdd", (messageReaction, user) =>
 
   console.log("messageReactionAdd")
 
-  messageReaction.message.channel.send("Reaction of ${emoji} from ${user.username} on ${author.username}'s message!")
+  messageReaction.message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
 )
 
 client.on("message", (message) =>
