@@ -21,3 +21,7 @@ client.on("messageReactionAdd", (messageReaction, user) =>
 
   messageReaction.message.channel.send("Reaction of ${emoji} from ${reactor.username} on ${author.username}'s message!")
 )
+
+client.on("message", (message) =>
+  console.log(message.content)
+)

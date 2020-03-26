@@ -28,4 +28,8 @@
     return messageReaction.message.channel.send("Reaction of ${emoji} from ${reactor.username} on ${author.username}'s message!");
   });
 
+  client.on("message", (message) => {
+    return console.log(message.content);
+  });
+
 }).call(this);
