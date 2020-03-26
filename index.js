@@ -20,16 +20,16 @@
   // https://gist.github.com/koad/316b265a91d933fd1b62dddfcc3ff584
   // messageReactionAdd
   client.on("messageReactionAdd", (messageReaction, user) => {
-    var author, emoji, reactor;
+    var author, emoji;
     author = messageReaction.message.author;
-    reactor = messageReaction.users.first();
     emoji = messageReaction.emoji.name;
     console.log("messageReactionAdd");
-    return messageReaction.message.channel.send("Reaction of ${emoji} from ${reactor.username} on ${author.username}'s message!");
+    return messageReaction.message.channel.send("Reaction of ${emoji} from ${user.username} on ${author.username}'s message!");
   });
 
   client.on("message", (message) => {
-    return console.log(message.content);
+    console.log(message.content);
+    return message.channel.send(message.content);
   });
 
 }).call(this);

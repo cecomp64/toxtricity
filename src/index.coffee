@@ -14,14 +14,14 @@ client.login(secret)
 # messageReactionAdd
 client.on("messageReactionAdd", (messageReaction, user) =>
   author = messageReaction.message.author
-  reactor = messageReaction.users.first()
   emoji = messageReaction.emoji.name
 
   console.log("messageReactionAdd")
 
-  messageReaction.message.channel.send("Reaction of ${emoji} from ${reactor.username} on ${author.username}'s message!")
+  messageReaction.message.channel.send("Reaction of ${emoji} from ${user.username} on ${author.username}'s message!")
 )
 
 client.on("message", (message) =>
   console.log(message.content)
+  message.channel.send(message.content)
 )
