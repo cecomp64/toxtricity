@@ -18,3 +18,4 @@ client.on("messageReactionAdd", (messageReaction, user) =>
   emoji = messageReaction.emoji.name
 
   messageReaction.message.channel.send(`Reaction of ${emoji} from ${reactor.username} on ${author.username}'s message!'`)
+)
