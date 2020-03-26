@@ -28,8 +28,7 @@
   });
 
   client.on("message", (message) => {
-    console.log(message.content);
-    return message.channel.send(message.content);
+    return console.log(message.content);
   });
 
 }).call(this);

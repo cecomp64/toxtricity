@@ -23,5 +23,4 @@ client.on("messageReactionAdd", (messageReaction, user) =>
 
 client.on("message", (message) =>
   console.log(message.content)
-  message.channel.send(message.content)
 )
