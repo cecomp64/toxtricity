@@ -42,18 +42,19 @@ client.on("messageReactionAdd", (messageReaction, user) =>
 
   console.log("Message partial: #{message.partial}")
 
-  # Fetch that message... always?
-  if(message.partial)
-    console.log("Message ID: #{message.id}")
-    channel.messages.fetch(message.id).then( (message) =>
-      author = message.author
-      console.log("Author: #{author}")
-      emoji = messageReaction.emoji.name
-      user = messageReaction.users.fetch().then( (users) =>
-        user = users.first()
-        print_reaction(emoji, user, author, message)
-      )
+  console.log("Message ID: #{message.id}")
+
+  # Fetch that message... always?  What if it is already cached?
+  channel.messages.fetch(message.id).then( (message) =>
+    author = message.author
+    console.log("Author: #{author}")
+    emoji = messageReaction.emoji.name
+
+    user = messageReaction.users.fetch().then( (users) =>
+      user = users.first()
+      print_reaction(emoji, user, author, message)
     )
+  )
 
   # Message format:
   #  Some text instructions

@@ -48,20 +48,18 @@
     message = messageReaction.message;
     channel = message.channel;
     console.log(`Message partial: ${message.partial}`);
-    // Fetch that message... always?
-    if (message.partial) {
-      console.log(`Message ID: ${message.id}`);
-      return channel.messages.fetch(message.id).then((message) => {
-        var author, emoji;
-        author = message.author;
-        console.log(`Author: ${author}`);
-        emoji = messageReaction.emoji.name;
-        return user = messageReaction.users.fetch().then((users) => {
-          user = users.first();
-          return print_reaction(emoji, user, author, message);
-        });
+    console.log(`Message ID: ${message.id}`);
+    // Fetch that message... always?  What if it is already cached?
+    return channel.messages.fetch(message.id).then((message) => {
+      var author, emoji;
+      author = message.author;
+      console.log(`Author: ${author}`);
+      emoji = messageReaction.emoji.name;
+      return user = messageReaction.users.fetch().then((users) => {
+        user = users.first();
+        return print_reaction(emoji, user, author, message);
       });
-    }
+    });
   });
 
   // Message format:
