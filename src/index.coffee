@@ -31,8 +31,14 @@ client.login(secret)
 # https://gist.github.com/koad/316b265a91d933fd1b62dddfcc3ff584
 # messageReactionAdd
 client.on("messageReactionAdd", (messageReaction, user) =>
+  # In discord.js-light, message is a *partial* (just ID)
+  #  channel.messages.fetch(id)
   message = messageReaction.message
+  console.log(`Message partial: ${message.partial()}`)
+
+  message = message.fetch() if(message.partial())
   author = message.author
+
   emoji = messageReaction.emoji.name
 
   console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
