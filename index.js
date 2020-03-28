@@ -48,10 +48,9 @@
       message = channel.messages.fetch(message.id);
     }
     author = message.author;
-    console.log(`Author partial: ${author.partial}`);
+    console.log(`Author: ${author}`);
     if (author.partial) {
-      console.log(`User ID: ${author.id}`);
-      client.users.fetch(author.id);
+      client.users.fetch(author);
     }
     emoji = messageReaction.emoji.name;
     console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
