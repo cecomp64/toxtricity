@@ -20,6 +20,10 @@ client = new Discord.Client()
 secret = process.env.DISCORD_TOKEN
 my_id = 1234
 
+print_reaction = (emoji, user, author) ->
+  console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
+  message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
+
 # Hola, mundo
 client.once('ready', () =>
   console.log('Ready!')
@@ -40,18 +44,19 @@ client.on("messageReactionAdd", (messageReaction, user) =>
 
   if(message.partial)
     console.log("Message ID: #{message.id}")
-    message = channel.messages.fetch(message.id)
+    channel.messages.fetch(message.id).then( (message) ->
+      foo = 1
 
-  author = message.author
-  console.log("Author: #{author}")
+      author = message.author
+      console.log("Author: #{author}")
 
-  if(author.partial)
-    client.users.fetch(author)
+      if(author.partial)
+        client.users.fetch(author)
+      emoji = messageReaction.emoji.name
 
-  emoji = messageReaction.emoji.name
-
-  console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
-  message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
+      user = messageReaction.users.first()
+      print_reaction(emoji, user, author)
+    )
 
   # Message format:
   #  Some text instructions

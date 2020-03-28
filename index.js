@@ -16,7 +16,7 @@
   //   - Quotes
   //     - Access the quotebook via API for a random quote
   //     - Band names
-  var Discord, client, my_id, secret;
+  var Discord, client, my_id, print_reaction, secret;
 
   Discord = require('discord.js-light');
 
@@ -25,6 +25,11 @@
   secret = process.env.DISCORD_TOKEN;
 
   my_id = 1234;
+
+  print_reaction = function(emoji, user, author) {
+    console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
+    return message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
+  };
 
   // Hola, mundo
   client.once('ready', () => {
@@ -37,7 +42,7 @@
   // https://gist.github.com/koad/316b265a91d933fd1b62dddfcc3ff584
   // messageReactionAdd
   client.on("messageReactionAdd", (messageReaction, user) => {
-    var author, channel, emoji, message;
+    var channel, message;
     // In discord.js-light, message is a *partial* (just ID)
     //  channel.messages.fetch(id)
     message = messageReaction.message;
@@ -45,16 +50,19 @@
     console.log(`Message partial: ${message.partial}`);
     if (message.partial) {
       console.log(`Message ID: ${message.id}`);
-      message = channel.messages.fetch(message.id);
+      return channel.messages.fetch(message.id).then(function(message) {
+        var author, emoji, foo;
+        foo = 1;
+        author = message.author;
+        console.log(`Author: ${author}`);
+        if (author.partial) {
+          client.users.fetch(author);
+        }
+        emoji = messageReaction.emoji.name;
+        user = messageReaction.users.first();
+        return print_reaction(emoji, user, author);
+      });
     }
-    author = message.author;
-    console.log(`Author: ${author}`);
-    if (author.partial) {
-      client.users.fetch(author);
-    }
-    emoji = messageReaction.emoji.name;
-    console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
-    return message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
   });
 
   // Message format:
