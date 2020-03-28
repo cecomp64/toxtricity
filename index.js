@@ -51,12 +51,12 @@
     // Fetch that message... always?
     if (message.partial) {
       console.log(`Message ID: ${message.id}`);
-      return channel.messages.fetch(message.id).then(function(message) {
+      return channel.messages.fetch(message.id).then((message) => {
         var author, emoji;
         author = message.author;
         console.log(`Author: ${author}`);
         emoji = messageReaction.emoji.name;
-        return user = messageReaction.users.fetch().then(function(users) {
+        return user = messageReaction.users.fetch().then((users) => {
           user = users.first();
           return print_reaction(emoji, user, author);
         });
