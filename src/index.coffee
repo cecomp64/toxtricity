@@ -34,9 +34,9 @@ client.on("messageReactionAdd", (messageReaction, user) =>
   # In discord.js-light, message is a *partial* (just ID)
   #  channel.messages.fetch(id)
   message = messageReaction.message
-  console.log("Message partial: #{message.partial()}")
+  console.log("Message partial: #{message.partial}")
 
-  message = message.fetch() if(message.partial())
+  message = message.fetch() if(message.partial)
   author = message.author
 
   emoji = messageReaction.emoji.name
