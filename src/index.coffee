@@ -14,6 +14,8 @@
 #   - Quotes
 #     - Access the quotebook via API for a random quote
 #     - Band names
+#   - Spin up a tabletopia game or link
+
 
 Discord = require('discord.js-light')
 client = new Discord.Client()
@@ -50,7 +52,9 @@ client.on("messageReactionAdd", (messageReaction, user) =>
     console.log("Author: #{author}")
     emoji = messageReaction.emoji.name
 
-    user = messageReaction.users.fetch().then( (users) =>
+    # Fetch those users!
+    messageReaction.users.fetch().then( (users) =>
+      # The first one is the one for this reaction!?  Check them all?
       user = users.first()
       print_reaction(emoji, user, author, message)
     )
