@@ -4,7 +4,8 @@
   "description": "A discord bot.",
   "main": "index.js",
   "dependencies": {
-    "discord.js": "^12.0.2"
+    "discord.js": "^12.0.2",
+    "discord.js-light": "^2.3.5"
   },
   "devDependencies": {},
   "scripts": {
