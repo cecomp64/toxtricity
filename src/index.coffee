@@ -20,7 +20,7 @@ client = new Discord.Client()
 secret = process.env.DISCORD_TOKEN
 my_id = 1234
 
-print_reaction = (emoji, user, author) ->
+print_reaction = (emoji, user, author, message) ->
   console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
   message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
 
@@ -51,7 +51,7 @@ client.on("messageReactionAdd", (messageReaction, user) =>
       emoji = messageReaction.emoji.name
       user = messageReaction.users.fetch().then( (users) =>
         user = users.first()
-        print_reaction(emoji, user, author)
+        print_reaction(emoji, user, author, message)
       )
     )
 

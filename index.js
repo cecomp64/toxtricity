@@ -26,7 +26,7 @@
 
   my_id = 1234;
 
-  print_reaction = function(emoji, user, author) {
+  print_reaction = function(emoji, user, author, message) {
     console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
     return message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
   };
@@ -58,7 +58,7 @@
         emoji = messageReaction.emoji.name;
         return user = messageReaction.users.fetch().then((users) => {
           user = users.first();
-          return print_reaction(emoji, user, author);
+          return print_reaction(emoji, user, author, message);
         });
       });
     }
