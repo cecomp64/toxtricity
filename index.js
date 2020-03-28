@@ -48,19 +48,18 @@
     message = messageReaction.message;
     channel = message.channel;
     console.log(`Message partial: ${message.partial}`);
+    // Fetch that message... always?
     if (message.partial) {
       console.log(`Message ID: ${message.id}`);
       return channel.messages.fetch(message.id).then(function(message) {
-        var author, emoji, foo;
-        foo = 1;
+        var author, emoji;
         author = message.author;
         console.log(`Author: ${author}`);
-        if (author.partial) {
-          client.users.fetch(author);
-        }
         emoji = messageReaction.emoji.name;
-        user = messageReaction.users.first();
-        return print_reaction(emoji, user, author);
+        return user = messageReaction.users.fetch().then(function(users) {
+          user = users.first();
+          return print_reaction(emoji, user, author);
+        });
       });
     }
   });

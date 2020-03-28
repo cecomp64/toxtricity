@@ -42,20 +42,17 @@ client.on("messageReactionAdd", (messageReaction, user) =>
 
   console.log("Message partial: #{message.partial}")
 
+  # Fetch that message... always?
   if(message.partial)
     console.log("Message ID: #{message.id}")
     channel.messages.fetch(message.id).then( (message) ->
-      foo = 1
-
       author = message.author
       console.log("Author: #{author}")
-
-      if(author.partial)
-        client.users.fetch(author)
       emoji = messageReaction.emoji.name
-
-      user = messageReaction.users.first()
-      print_reaction(emoji, user, author)
+      user = messageReaction.users.fetch().then( (users) ->
+        user = users.first()
+        print_reaction(emoji, user, author)
+      )
     )
 
   # Message format:
