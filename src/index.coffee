@@ -36,7 +36,7 @@ client.on("messageReactionAdd", (messageReaction, user) =>
   message = messageReaction.message
   console.log("Message partial: #{message.partial}")
 
-  message = message.fetch() if(message.partial)
+  await message.fetch() if(message.partial)
   author = message.author
 
   emoji = messageReaction.emoji.name
