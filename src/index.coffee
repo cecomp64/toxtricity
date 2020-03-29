@@ -240,7 +240,7 @@ client.on("message", (message) =>
       when 'poll'
         return 1
       when 'roles'
-        message.channel.send("Trying to create message...").then((message) => console.log(message.content))
+        #message.channel.send("Trying to create message...").then((message) => console.log(message.content))
         create_role_assignments(words, message.channel)
 )
 

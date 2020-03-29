@@ -264,9 +264,7 @@
         case 'poll':
           return 1;
         case 'roles':
-          message.channel.send("Trying to create message...").then((message) => {
-            return console.log(message.content);
-          });
+          //message.channel.send("Trying to create message...").then((message) => console.log(message.content))
           return create_role_assignments(words, message.channel);
       }
     }
