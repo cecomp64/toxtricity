@@ -233,7 +233,7 @@
       // Fetch the channel for good measure...
       return channel.fetch().then((_channel) => {
         // Send the message
-        return channel.send(message_content).then((message) => {
+        return _channel.send(message_content).then((message) => {
           var l, len1, results, role_message;
           // Why is message undefined!?!?!?!?!?
           console.log(message);

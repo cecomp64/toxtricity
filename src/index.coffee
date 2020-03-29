@@ -214,7 +214,7 @@ create_role_assignments = (words, channel) =>
     # Fetch the channel for good measure...
     channel.fetch().then((_channel) =>
       # Send the message
-      channel.send(message_content).then((message) =>
+      _channel.send(message_content).then((message) =>
         # Why is message undefined!?!?!?!?!?
         console.log(message)
         role_message = RoleMessage.create({message_id: message.id})
