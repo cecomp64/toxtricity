@@ -78,8 +78,8 @@ Role = sequelize.define('role', {
   }
 })
 
-Role.belongsToMany(RoleMessage)
-RoleMessage.belongsToMany(Role)
+Role.belongsToMany(RoleMessage, {through: 'RoleRoleMessage'})
+RoleMessage.belongsToMany(Role, {through: 'RoleRoleMessage'})
 
 Poll = sequelize.define('poll', {
   message_id: {
@@ -102,7 +102,7 @@ Choice = sequelize.define('choice', {
 Choice.belongsTo(Poll)
 
 # Update models
-sequelize.sync({force: true})
+sequelize.sync()
 
 print_reaction = (emoji, user, author, message) =>
   console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
@@ -217,14 +217,16 @@ create_role_assignments = (words, channel) =>
       _channel.send(message_content).then((message) =>
         # Why is message undefined!?!?!?!?!?
         console.log(message)
-        role_message = RoleMessage.create({message_id: message.id})
+        RoleMessage.create({message_id: message.id}).then((role_message) =>
 
-        # Add placeholder reactions
-        for role, i in resolved_roles
-          message.react(role.emoji).then((messageReaction) =>
-            # Add this role to the role_message, so reactions will trigger role assignments
-            role_message.addRole(role).then(console.log).catch(console.error)
-          ).catch(console.error)
+          # Add placeholder reactions
+          for role, i in resolved_roles
+            message.react(role.emoji).then((messageReaction) =>
+              # Add this role to the role_message, so reactions will trigger role assignments
+              role_message.addRole(role).then(console.log).catch(console.error)
+            ).catch(console.error)
+        ).catch(console.error)
+
       ).catch(console.error)
     ).catch(console.error)
   ).catch(console.error)

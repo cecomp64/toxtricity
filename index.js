@@ -88,9 +88,13 @@
     }
   });
 
-  Role.belongsToMany(RoleMessage);
+  Role.belongsToMany(RoleMessage, {
+    through: 'RoleRoleMessage'
+  });
 
-  RoleMessage.belongsToMany(Role);
+  RoleMessage.belongsToMany(Role, {
+    through: 'RoleRoleMessage'
+  });
 
   Poll = sequelize.define('poll', {
     message_id: {
@@ -113,9 +117,7 @@
   Choice.belongsTo(Poll);
 
   // Update models
-  sequelize.sync({
-    force: true
-  });
+  sequelize.sync();
 
   print_reaction = (emoji, user, author, message) => {
     console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
@@ -232,22 +234,23 @@
       return channel.fetch().then((_channel) => {
         // Send the message
         return _channel.send(message_content).then((message) => {
-          var l, len1, results, role_message;
           // Why is message undefined!?!?!?!?!?
           console.log(message);
-          role_message = RoleMessage.create({
+          return RoleMessage.create({
             message_id: message.id
-          });
+          }).then((role_message) => {
+            var l, len1, results;
 // Add placeholder reactions
-          results = [];
-          for (i = l = 0, len1 = resolved_roles.length; l < len1; i = ++l) {
-            role = resolved_roles[i];
-            results.push(message.react(role.emoji).then((messageReaction) => {
-              // Add this role to the role_message, so reactions will trigger role assignments
-              return role_message.addRole(role).then(console.log).catch(console.error);
-            }).catch(console.error));
-          }
-          return results;
+            results = [];
+            for (i = l = 0, len1 = resolved_roles.length; l < len1; i = ++l) {
+              role = resolved_roles[i];
+              results.push(message.react(role.emoji).then((messageReaction) => {
+                // Add this role to the role_message, so reactions will trigger role assignments
+                return role_message.addRole(role).then(console.log).catch(console.error);
+              }).catch(console.error));
+            }
+            return results;
+          }).catch(console.error);
         }).catch(console.error);
       }).catch(console.error);
     }).catch(console.error);
