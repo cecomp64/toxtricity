@@ -166,7 +166,7 @@ find_or_create_role = (emoji, name)  =>
     if(role == null)
       Role.create({emoji: emoji, name: name}).then((new_role) =>
         return new_role
-      )
+      ).catch(console.error)
     else
       return role
   ).catch(console.error)
@@ -185,7 +185,7 @@ create_role_assignments = (words, channel) =>
 
   # what remains should be emoji, role pairs
   str = words.join(' ')
-  tokens = str.split(',')
+  tokens = tokenize(str, ',')
   console.log(tokens)
 
   # Process each role with its emoji
@@ -221,7 +221,7 @@ create_role_assignments = (words, channel) =>
   )
 
 client.on("message", (message) =>
-  words = tokenize(message.content)
+  words = tokenize(message.content, ' ')
   console.log(words)
 
   first_word = words.shift()
@@ -238,6 +238,7 @@ client.on("message", (message) =>
 )
 
 # Put this at the end because syntax highlighting is sad
-tokenize = (str) =>
-  tokens = str.split(/ +/).filter((el) -> el != '').map((el) -> el.trim())
+tokenize = (str, separator) =>
+  regex = new RegExp("#{seaprator}+")
+  tokens = str.split(regex).filter((el) -> el != '').map((el) -> el.trim())
   return tokens

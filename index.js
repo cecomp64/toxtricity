@@ -182,7 +182,7 @@
           name: name
         }).then((new_role) => {
           return new_role;
-        });
+        }).catch(console.error);
       } else {
         return role;
       }
@@ -202,7 +202,7 @@
     roles = [];
     // what remains should be emoji, role pairs
     str = words.join(' ');
-    tokens = str.split(',');
+    tokens = tokenize(str, ',');
     console.log(tokens);
 // Process each role with its emoji
     for (i = j = 0, ref = tokens.length - 1; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
@@ -246,7 +246,7 @@
 
   client.on("message", (message) => {
     var command, first_word, words;
-    words = tokenize(message.content);
+    words = tokenize(message.content, ' ');
     console.log(words);
     first_word = words.shift();
     command = words.shift();
@@ -262,9 +262,10 @@
   });
 
   // Put this at the end because syntax highlighting is sad
-  tokenize = (str) => {
-    var tokens;
-    tokens = str.split(/ +/).filter(function(el) {
+  tokenize = (str, separator) => {
+    var regex, tokens;
+    regex = new RegExp(`${seaprator}+`);
+    tokens = str.split(regex).filter(function(el) {
       return el !== '';
     }).map(function(el) {
       return el.trim();
