@@ -212,7 +212,7 @@ create_role_assignments = (words, channel) =>
                   position: 4,
                 },
                 reason: "To stay informed about #{role.name}",
-              })
+              }).then(console.log).catch(console.error)
             ).catch(console.error)
         ).catch(console.error) # RoleMessage.create
 
