@@ -115,35 +115,6 @@ client.once('ready', () =>
 
 client.login(secret)
 
-# Events
-# https://gist.github.com/koad/316b265a91d933fd1b62dddfcc3ff584
-# messageReactionAdd
-client.on("messageReactionAdd", (messageReaction, user) =>
-  # In discord.js-light, message is a *partial*
-  message = messageReaction.message
-  channel = message.channel
-
-  console.log("Message partial: #{message.partial}")
-  console.log("Message ID: #{message.id}")
-
-  # Fetch that message... always?  What if it is already cached?
-  channel.messages.fetch(message.id).then( (message) =>
-    author = message.author
-    console.log("Author: #{author}")
-    emoji = messageReaction.emoji.name
-
-    # Fetch those users!
-    messageReaction.users.fetch().then( (users) =>
-      # The first one is the one for this reaction!?  Check them all?
-      user = users.first()
-      print_reaction(emoji, user, author, message)
-    ).catch(console.error)
-
-  ).catch(console.error)
-
-  # Message format:
-  #  Some text instructions
-)
 
 parse_poll = (message) =>
   return 1
@@ -215,22 +186,36 @@ create_role_assignments = (words, channel) =>
     channel.fetch().then((_channel) =>
       # Send the message
       _channel.send(message_content).then((message) =>
-        # Why is message undefined!?!?!?!?!?
         console.log(message)
-        RoleMessage.create({message_id: message.id}).then((role_message) =>
 
+        # Create the role message to lookup on reaction
+        role_message = RoleMessage.create({message_id: message.id})
+        guild = message.guild.fetch()
+
+        # Wait for them both...
+        load_data = []
+        load_data.push(role_message)
+        load_data.push(guild)
+
+        # Create the role message to lookup on reaction
+        Promis.all(load_data).then( (loaded_data) =>
           # Add placeholder reactions
           for role, i in resolved_roles
             message.react(role.emoji).then((messageReaction) =>
               # Add this role to the role_message, so reactions will trigger role assignments
               role_message.addRole(role).then(console.log).catch(console.error)
+
+              # Create role
             ).catch(console.error)
-        ).catch(console.error)
+        ).catch(console.error) # RoleMessage.create
 
-      ).catch(console.error)
-    ).catch(console.error)
-  ).catch(console.error)
+      ).catch(console.error) # channel.send
+    ).catch(console.error) # channel.fetch
+  ).catch(console.error) # Promise.all
 
+# message
+#
+# Parse commands
 client.on("message", (message) =>
   words = tokenize(message.content, ' ')
   console.log(words)
@@ -245,9 +230,45 @@ client.on("message", (message) =>
       when 'poll'
         return 1
       when 'roles'
-        #message.channel.send("Trying to create message...").then((message) => console.log(message.content))
         create_role_assignments(words, message.channel)
 )
+
+# messageReactionAdd
+#
+# Handle any reaction-based actions, like:
+#   - Assigning a role if the reaction message matches a RoleMessage
+client.on("messageReactionAdd", (messageReaction, user) =>
+  # In discord.js-light, message is a *partial*
+  message = messageReaction.message
+  channel = message.channel
+
+  console.log("Message partial: #{message.partial}")
+  console.log("Message ID: #{message.id}")
+
+  # Fetch that message... always?  What if it is already cached?
+  channel.messages.fetch(message.id).then( (message) =>
+    author = message.author
+    console.log("Author: #{author}")
+    emoji = messageReaction.emoji.name
+
+    # Fetch those users!
+    messageReaction.users.fetch().then( (users) =>
+      # The first one is the one for this reaction!?  Check them all?
+      user = users.first()
+      print_reaction(emoji, user, author, message)
+    ).catch(console.error)
+
+  ).catch(console.error)
+
+  # Message format:
+  #  Some text instructions
+)
+
+#######################################################
+#######################################################
+#                   Helpers
+#######################################################
+#######################################################
 
 # Put this at the end because syntax highlighting is sad
 tokenize = (str, separator) =>
