@@ -188,7 +188,7 @@
         return role;
       }
     }).catch(console.error);
-    return null;
+    return ret_role;
   };
 
   // create_role_assignments
@@ -220,6 +220,7 @@
     if (roles.length === 0) {
       return null;
     }
+    // Roles are still just promises, so wait for them all
     return Promise.all(roles).then((resolved_roles) => {
       var k, len, message_content, role;
       // Create the message to assign roles!
@@ -246,7 +247,7 @@
         }
         return results;
       });
-    });
+    }).catch(console.error);
   };
 
   client.on("message", (message) => {

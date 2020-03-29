@@ -164,14 +164,14 @@ find_or_create_role = (emoji, name)  =>
     }
   }).then((role) =>
     if(role == null)
-      Role.create({emoji: emoji, name: name}).then((new_role) =>
+      return Role.create({emoji: emoji, name: name}).then((new_role) =>
         return new_role
       ).catch(console.error)
     else
       return role
   ).catch(console.error)
 
-  return null
+  return ret_role
 
 # create_role_assignments
 #
@@ -202,6 +202,7 @@ create_role_assignments = (words, channel) =>
 
   return null if(roles.length == 0)
 
+  # Roles are still just promises, so wait for them all
   Promise.all(roles).then((resolved_roles) =>
     # Create the message to assign roles!
     message_content = "Respond with an emoji to assign yourself one of the following roles: \n"
@@ -221,7 +222,7 @@ create_role_assignments = (words, channel) =>
           role_message.addRole(role).then(console.log).catch(console.error)
         ).catch(console.error)
     )
-  )
+  ).catch(console.error)
 
 client.on("message", (message) =>
   words = tokenize(message.content, ' ')
