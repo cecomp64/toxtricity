@@ -27,7 +27,7 @@
   //     - Access the quotebook via API for a random quote
   //     - Band names
   //   - Spin up a tabletopia game or link
-  var Boardgame, Choice, Discord, Poll, Role, RoleMessage, Sequelize, client, create_role_assignments, find_or_create_role, my_id, parse_poll, print_reaction, secret, sequelize;
+  var Boardgame, Choice, Discord, Poll, Role, RoleMessage, Sequelize, client, create_role_assignments, find_or_create_role, my_id, parse_poll, print_reaction, secret, sequelize, tokenize;
 
   Discord = require('discord.js-light');
 
@@ -166,10 +166,9 @@
 
   // Use the name to find a role.  If none exists, create it and give it an emoji.
   find_or_create_role = (emoji, name) => {
-    var chars;
     // Sanity check emoji starts and ends with ::
-    chars = emoji.split();
-    if (chars[0] !== ':' || chars[chars.length - 1] !== ':') {
+    if (emoji.charCodeAt(0) <= 255) { // Unicode at least...
+      console.log(`find_or_create_role: emoji argument failed sanity check ${emoji}`);
       return null;
     }
     Role.findByName(name).then((role) => {
@@ -241,10 +240,7 @@
 
   client.on("message", (message) => {
     var command, first_word, words;
-    words = message.content.split(' ');
-    words = words.filter(function(el) {
-      return el !== '';
-    });
+    words = tokenize(message.content);
     console.log(words);
     first_word = words.shift();
     command = words.shift();
@@ -258,5 +254,14 @@
       }
     }
   });
+
+  // Put this at the end because syntax highlighting is sad
+  tokenize = (str) => {
+    var tokens;
+    tokens = str.split(/ +/).filter(function(el) {
+      return el !== '';
+    });
+    return tokens;
+  };
 
 }).call(this);

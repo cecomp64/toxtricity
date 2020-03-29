@@ -154,8 +154,9 @@ parse_poll = (message) =>
 # Use the name to find a role.  If none exists, create it and give it an emoji.
 find_or_create_role = (emoji, name)  =>
   # Sanity check emoji starts and ends with ::
-  chars = emoji.split()
-  return null if((chars[0] != ':' || chars[chars.length-1] != ':'))
+  if(emoji.charCodeAt(0) <= 255) # Unicode at least...
+    console.log("find_or_create_role: emoji argument failed sanity check #{emoji}")
+    return null
 
   Role.findByName(name).then((role) =>
     if(role == null)
@@ -214,8 +215,7 @@ create_role_assignments = (words, channel) =>
   )
 
 client.on("message", (message) =>
-  words = message.content.split(' ')
-  words = words.filter((el) -> el != '')
+  words = tokenize(message.content)
   console.log(words)
 
   first_word = words.shift()
@@ -230,3 +230,8 @@ client.on("message", (message) =>
       when 'roles'
         create_role_assignments(words, message.channel)
 )
+
+# Put this at the end because syntax highlighting is sad
+tokenize = (str) =>
+  tokens = str.split(/ +/).filter((el) -> el != '')
+  return tokens
