@@ -158,7 +158,7 @@ find_or_create_role = (emoji, name)  =>
     console.log("find_or_create_role: emoji argument failed sanity check #{emoji}")
     return null
 
-  Role.findOne({
+  ret_role = Role.findOne({
     where: {
       name: name
     }
@@ -202,22 +202,25 @@ create_role_assignments = (words, channel) =>
 
   return null if(roles.length == 0)
 
-  # Create the message to assign roles!
-  message_content = "Respond with an emoji to assign yourself one of the following roles: \n"
+  Promise.all(roles).then((resolved_roles) =>
+    # Create the message to assign roles!
+    message_content = "Respond with an emoji to assign yourself one of the following roles: \n"
 
-  for role, i in roles
-    message_content = "#{message_content}#{role.description}\n"
+    for role, i in resolved_roles
+      console.log(role)
+      message_content = "#{message_content}#{role.description}\n"
 
-  # Send the message
-  channel.send(message_content).then((message) =>
-    role_message = RoleMessage.create({message_id: message.id})
+    # Send the message
+    channel.send(message_content).then((message) =>
+      role_message = RoleMessage.create({message_id: message.id})
 
-    # Add placeholder reactions
-    for role, i in roles
-      message.react(role.emoji).then((messageReaction) =>
-        # Add this role to the role_message, so reactions will trigger role assignments
-        role_message.addRole(role).then(console.log).catch(console.error)
-      ).catch(console.error)
+      # Add placeholder reactions
+      for role, i in resolved_roles
+        message.react(role.emoji).then((messageReaction) =>
+          # Add this role to the role_message, so reactions will trigger role assignments
+          role_message.addRole(role).then(console.log).catch(console.error)
+        ).catch(console.error)
+    )
   )
 
 client.on("message", (message) =>

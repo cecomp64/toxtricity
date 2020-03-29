@@ -166,12 +166,13 @@
 
   // Use the name to find a role.  If none exists, create it and give it an emoji.
   find_or_create_role = (emoji, name) => {
+    var ret_role;
     // Sanity check emoji starts and ends with ::
     if (emoji.charCodeAt(0) <= 255) { // Unicode at least...
       console.log(`find_or_create_role: emoji argument failed sanity check ${emoji}`);
       return null;
     }
-    Role.findOne({
+    ret_role = Role.findOne({
       where: {
         name: name
       }
@@ -198,7 +199,7 @@
   // Send a message to the given channel with the parsed out roles.  Create the RoleMessage object with the associated
   // Roles.  Create any Roles that do not already exist.
   create_role_assignments = (words, channel) => {
-    var emoji, entry_words, i, j, k, len, message_content, name, ref, role, roles, str, tokens;
+    var emoji, entry_words, i, j, name, ref, roles, str, tokens;
     roles = [];
     // what remains should be emoji, role pairs
     str = words.join(' ');
@@ -219,28 +220,32 @@
     if (roles.length === 0) {
       return null;
     }
-    // Create the message to assign roles!
-    message_content = "Respond with an emoji to assign yourself one of the following roles: \n";
-    for (i = k = 0, len = roles.length; k < len; i = ++k) {
-      role = roles[i];
-      message_content = `${message_content}${role.description}\n`;
-    }
-    // Send the message
-    return channel.send(message_content).then((message) => {
-      var l, len1, results, role_message;
-      role_message = RoleMessage.create({
-        message_id: message.id
-      });
-// Add placeholder reactions
-      results = [];
-      for (i = l = 0, len1 = roles.length; l < len1; i = ++l) {
-        role = roles[i];
-        results.push(message.react(role.emoji).then((messageReaction) => {
-          // Add this role to the role_message, so reactions will trigger role assignments
-          return role_message.addRole(role).then(console.log).catch(console.error);
-        }).catch(console.error));
+    return Promise.all(roles).then((resolved_roles) => {
+      var k, len, message_content, role;
+      // Create the message to assign roles!
+      message_content = "Respond with an emoji to assign yourself one of the following roles: \n";
+      for (i = k = 0, len = resolved_roles.length; k < len; i = ++k) {
+        role = resolved_roles[i];
+        console.log(role);
+        message_content = `${message_content}${role.description}\n`;
       }
-      return results;
+      // Send the message
+      return channel.send(message_content).then((message) => {
+        var l, len1, results, role_message;
+        role_message = RoleMessage.create({
+          message_id: message.id
+        });
+// Add placeholder reactions
+        results = [];
+        for (i = l = 0, len1 = resolved_roles.length; l < len1; i = ++l) {
+          role = resolved_roles[i];
+          results.push(message.react(role.emoji).then((messageReaction) => {
+            // Add this role to the role_message, so reactions will trigger role assignments
+            return role_message.addRole(role).then(console.log).catch(console.error);
+          }).catch(console.error));
+        }
+        return results;
+      });
     });
   };
 
