@@ -203,6 +203,7 @@
     // what remains should be emoji, role pairs
     str = words.join(' ');
     tokens = str.split(',');
+    console.log(tokens);
 // Process each role with its emoji
     for (i = j = 0, ref = tokens.length - 1; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
       entry_words = tokens[i].split(' ');
@@ -211,6 +212,7 @@
       roles.push(find_or_create_role(emoji, name));
     }
     // Remove failed roles
+    console.log(roles);
     roles = roles.filter(function(el) {
       return el !== null;
     });
@@ -264,6 +266,8 @@
     var tokens;
     tokens = str.split(/ +/).filter(function(el) {
       return el !== '';
+    }).map(function(el) {
+      return el.trim();
     });
     return tokens;
   };

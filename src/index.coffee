@@ -186,6 +186,7 @@ create_role_assignments = (words, channel) =>
   # what remains should be emoji, role pairs
   str = words.join(' ')
   tokens = str.split(',')
+  console.log(tokens)
 
   # Process each role with its emoji
   for i in [0..tokens.length-1]
@@ -196,6 +197,7 @@ create_role_assignments = (words, channel) =>
     roles.push find_or_create_role(emoji, name)
 
   # Remove failed roles
+  console.log(roles)
   roles = roles.filter((el) -> el != null)
 
   return null if(roles.length == 0)
@@ -237,5 +239,5 @@ client.on("message", (message) =>
 
 # Put this at the end because syntax highlighting is sad
 tokenize = (str) =>
-  tokens = str.split(/ +/).filter((el) -> el != '')
+  tokens = str.split(/ +/).filter((el) -> el != '').map((el) -> el.trim())
   return tokens
