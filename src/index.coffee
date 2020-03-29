@@ -208,11 +208,12 @@ create_role_assignments = (words, channel) =>
     message_content = "Respond with an emoji to assign yourself one of the following roles: \n"
 
     for role, i in resolved_roles
-      console.log(role)
+      console.log(role.name)
       message_content = "#{message_content}#{role.description}\n"
 
     # Send the message
     channel.send(message_content).then((message) =>
+      console.log(message)
       role_message = RoleMessage.create({message_id: message.id})
 
       # Add placeholder reactions

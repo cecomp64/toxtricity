@@ -227,12 +227,13 @@
       message_content = "Respond with an emoji to assign yourself one of the following roles: \n";
       for (i = k = 0, len = resolved_roles.length; k < len; i = ++k) {
         role = resolved_roles[i];
-        console.log(role);
+        console.log(role.name);
         message_content = `${message_content}${role.description}\n`;
       }
       // Send the message
       return channel.send(message_content).then((message) => {
         var l, len1, results, role_message;
+        console.log(message);
         role_message = RoleMessage.create({
           message_id: message.id
         });
