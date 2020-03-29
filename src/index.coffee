@@ -198,7 +198,7 @@ create_role_assignments = (words, channel) =>
         load_data.push(guild)
 
         # Create the role message to lookup on reaction
-        Promis.all(load_data).then( (loaded_data) =>
+        Promise.all(load_data).then( (loaded_data) =>
           # Add placeholder reactions
           for role, i in resolved_roles
             message.react(role.emoji).then((messageReaction) =>

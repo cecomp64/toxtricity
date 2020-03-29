@@ -219,7 +219,7 @@
           load_data.push(role_message);
           load_data.push(guild);
           // Create the role message to lookup on reaction
-          return Promis.all(load_data).then((loaded_data) => {
+          return Promise.all(load_data).then((loaded_data) => {
             var l, len1, results;
 // Add placeholder reactions
             results = [];
