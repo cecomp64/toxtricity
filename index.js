@@ -172,18 +172,18 @@
     if (chars[0] !== ':' || chars[chars.length - 1] !== ':') {
       return null;
     }
-    Role.findByName(name).then(role(() => {
+    Role.findByName(name).then((role) => {
       if (role === null) {
         return Role.create({
           emoji: emoji,
           name: name
-        }).then(new_role(() => {
+        }).then((new_role) => {
           return new_role;
-        }));
+        });
       } else {
         return role;
       }
-    })).catch(console.error);
+    }).catch(console.error);
     return null;
   };
 
@@ -208,9 +208,9 @@
       roles.push(find_or_create_role(emoji, name));
     }
     // Remove failed roles
-    roles = roles.filter(el(function() {
+    roles = roles.filter(function(el) {
       return el !== null;
-    }));
+    });
     if (roles.length === 0) {
       return null;
     }
@@ -221,7 +221,7 @@
       message_content = `${message_content}${role.description}\n`;
     }
     // Send the message
-    return channel.send(message_content).then(message(() => {
+    return channel.send(message_content).then((message) => {
       var l, len1, results, role_message;
       role_message = RoleMessage.create({
         message_id: message.id
@@ -230,21 +230,21 @@
       results = [];
       for (i = l = 0, len1 = roles.length; l < len1; i = ++l) {
         role = roles[i];
-        results.push(message.react(role.emoji).then(messageReaction(() => {
+        results.push(message.react(role.emoji).then((messageReaction) => {
           // Add this role to the role_message, so reactions will trigger role assignments
           return role_message.addRole(role).then(console.log).catch(console.error);
-        })).catch(console.error));
+        }).catch(console.error));
       }
       return results;
-    }));
+    });
   };
 
   client.on("message", (message) => {
     var command, first_word, words;
     words = message.content.split(' ');
-    words = words.filter(el(function() {
+    words = words.filter(function(el) {
       return el !== '';
-    }));
+    });
     console.log(words);
     first_word = words.shift();
     command = words.shift();

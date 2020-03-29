@@ -157,9 +157,9 @@ find_or_create_role = (emoji, name)  =>
   chars = emoji.split()
   return null if((chars[0] != ':' || chars[chars.length-1] != ':'))
 
-  Role.findByName(name).then(role =>
+  Role.findByName(name).then((role) =>
     if(role == null)
-      Role.create({emoji: emoji, name: name}).then(new_role =>
+      Role.create({emoji: emoji, name: name}).then((new_role) =>
         return new_role
       )
     else
@@ -191,7 +191,7 @@ create_role_assignments = (words, channel) =>
     roles.push find_or_create_role(emoji, name)
 
   # Remove failed roles
-  roles = roles.filter(el -> el != null)
+  roles = roles.filter((el) -> el != null)
 
   return null if(roles.length == 0)
 
@@ -202,12 +202,12 @@ create_role_assignments = (words, channel) =>
     message_content = "#{message_content}#{role.description}\n"
 
   # Send the message
-  channel.send(message_content).then(message =>
+  channel.send(message_content).then((message) =>
     role_message = RoleMessage.create({message_id: message.id})
 
     # Add placeholder reactions
     for role, i in roles
-      message.react(role.emoji).then(messageReaction =>
+      message.react(role.emoji).then((messageReaction) =>
         # Add this role to the role_message, so reactions will trigger role assignments
         role_message.addRole(role).then(console.log).catch(console.error)
       ).catch(console.error)
@@ -215,7 +215,7 @@ create_role_assignments = (words, channel) =>
 
 client.on("message", (message) =>
   words = message.content.split(' ')
-  words = words.filter(el -> el != '')
+  words = words.filter((el) -> el != '')
   console.log(words)
 
   first_word = words.shift()
