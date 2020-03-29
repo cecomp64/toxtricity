@@ -158,7 +158,11 @@ find_or_create_role = (emoji, name)  =>
     console.log("find_or_create_role: emoji argument failed sanity check #{emoji}")
     return null
 
-  Role.findByName(name).then((role) =>
+  Role.findOne({
+    where: {
+      name: name
+    }
+  }).then((role) =>
     if(role == null)
       Role.create({emoji: emoji, name: name}).then((new_role) =>
         return new_role
