@@ -88,13 +88,9 @@
     }
   });
 
-  Role.belongsToMany(RoleMessage, {
-    through: 'RoleRoleMessage'
-  });
+  Role.belongsToMany(RoleMessage);
 
-  RoleMessage.belongsToMany(Role, {
-    through: 'RoleRoleMessage'
-  });
+  RoleMessage.belongsToMany(Role);
 
   Poll = sequelize.define('poll', {
     message_id: {
@@ -117,7 +113,9 @@
   Choice.belongsTo(Poll);
 
   // Update models
-  sequelize.sync();
+  sequelize.sync({
+    force: true
+  });
 
   print_reaction = (emoji, user, author, message) => {
     console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
