@@ -232,7 +232,8 @@
                   data: {
                     name: role.name,
                     mentionable: true,
-                    position: 4
+                    position: 4,
+                    permissions: Discord.Permissions.DEFAULT
                   },
                   reason: `To stay informed about ${role.name}`
                 }).then(console.log).catch(console.error);
