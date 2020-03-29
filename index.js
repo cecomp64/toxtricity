@@ -226,8 +226,16 @@
               role = resolved_roles[i];
               results.push(message.react(role.emoji).then((messageReaction) => {
                 // Add this role to the role_message, so reactions will trigger role assignments
-                return role_message.addRole(role).then(console.log).catch(console.error);
-              // Create role
+                role_message.addRole(role).then(console.log).catch(console.error);
+                // Create role
+                return guild.roles.create({
+                  data: {
+                    name: role.name,
+                    mentionable: true,
+                    position: 4
+                  },
+                  reason: `To stay informed about ${role.name}`
+                });
               }).catch(console.error));
             }
             return results;

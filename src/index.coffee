@@ -205,6 +205,14 @@ create_role_assignments = (words, channel) =>
               role_message.addRole(role).then(console.log).catch(console.error)
 
               # Create role
+              guild.roles.create({
+                data: {
+                  name: role.name,
+                  mentionable: true,
+                  position: 4,
+                },
+                reason: "To stay informed about #{role.name}",
+              })
             ).catch(console.error)
         ).catch(console.error) # RoleMessage.create
 
