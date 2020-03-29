@@ -217,19 +217,26 @@
           load_data.push(message.guild.fetch());
           // Wait for them both...
           return Promise.all(load_data).then((loaded_data) => {
-            var guild, l, len1, results, role_message;
+            var guild, l, len1, reactionsAsync, role_message;
             role_message = loaded_data[0];
             guild = loaded_data[1];
-// Add placeholder reactions
-            results = [];
+            // Add placeholder reactions
+            reactionsAsync = [];
             for (i = l = 0, len1 = resolved_roles.length; l < len1; i = ++l) {
               role = resolved_roles[i];
-              results.push(message.react(role.emoji).then((messageReaction) => {
+              reactionsAsync.push(message.react(role.emoji));
+            }
+            return Promise.all(reactionsAsync).then((reactions) => {
+              var len2, m, reactionMessage, results;
+              results = [];
+              for (i = m = 0, len2 = reactions.length; m < len2; i = ++m) {
+                reactionMessage = reactions[i];
+                role = resolved_roles[i];
                 // Add this role to the role_message, so reactions will trigger role assignments
                 role_message.addRole(role).then(console.log).catch(console.error);
                 console.log(`Default permissions: ${Discord.Permissions.DEFAULT}`);
                 // Create role
-                return guild.roles.create({
+                results.push(guild.roles.create({
                   data: {
                     name: role.name,
                     mentionable: true,
@@ -237,10 +244,10 @@
                     permissions: Discord.Permissions.DEFAULT
                   },
                   reason: `To stay informed about ${role.name}`
-                }).then(console.log).catch(console.error);
-              }).catch(console.error));
-            }
-            return results;
+                }).then(console.log).catch(console.error));
+              }
+              return results;
+            }).catch(console.error);
           }).catch(console.error); // RoleMessage.create
         }).catch(console.error); // channel.send
       }).catch(console.error); // channel.fetch

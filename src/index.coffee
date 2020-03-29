@@ -199,8 +199,14 @@ create_role_assignments = (words, channel) =>
           guild = loaded_data[1]
 
           # Add placeholder reactions
+          reactionsAsync = []
           for role, i in resolved_roles
-            message.react(role.emoji).then((messageReaction) =>
+            reactionsAsync.push(message.react(role.emoji))
+
+          Promise.all(reactionsAsync).then((reactions) =>
+            for reactionMessage, i in reactions
+              role = resolved_roles[i]
+
               # Add this role to the role_message, so reactions will trigger role assignments
               role_message.addRole(role).then(console.log).catch(console.error)
 
