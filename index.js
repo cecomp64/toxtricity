@@ -201,7 +201,7 @@
     str = words.join(' ');
     tokens = str.split(',');
 // Process each role with its emoji
-    for (i = j = 0, ref = tokens.length; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
+    for (i = j = 0, ref = tokens.length - 1; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
       entry_words = tokens[i].split(' ');
       emoji = entry_words.shift();
       name = entry_words.join(' ');
@@ -242,6 +242,9 @@
   client.on("message", (message) => {
     var command, first_word, words;
     words = message.content.split(' ');
+    words = words.filter(el(function() {
+      return el !== '';
+    }));
     console.log(words);
     first_word = words.shift();
     command = words.shift();

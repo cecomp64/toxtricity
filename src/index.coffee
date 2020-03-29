@@ -183,7 +183,7 @@ create_role_assignments = (words, channel) =>
   tokens = str.split(',')
 
   # Process each role with its emoji
-  for i in [0..tokens.length]
+  for i in [0..tokens.length-1]
     entry_words = tokens[i].split(' ')
     emoji = entry_words.shift()
     name = entry_words.join(' ')
@@ -215,6 +215,7 @@ create_role_assignments = (words, channel) =>
 
 client.on("message", (message) =>
   words = message.content.split(' ')
+  words = words.filter(el -> el != '')
   console.log(words)
 
   first_word = words.shift()
