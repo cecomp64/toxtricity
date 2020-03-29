@@ -230,25 +230,27 @@
         console.log(role.name);
         message_content = `${message_content}${role.description}\n`;
       }
-      // Send the message
-      console.log(message_content);
-      return channel.send(message_content).then((message) => {
-        var l, len1, results, role_message;
-        // Why is message undefined!?!?!?!?!?
-        console.log(message);
-        role_message = RoleMessage.create({
-          message_id: message.id
-        });
+      // Fetch the channel for good measure...
+      return channel.fetch().then((_channel) => {
+        // Send the message
+        return channel.send(message_content).then((message) => {
+          var l, len1, results, role_message;
+          // Why is message undefined!?!?!?!?!?
+          console.log(message);
+          role_message = RoleMessage.create({
+            message_id: message.id
+          });
 // Add placeholder reactions
-        results = [];
-        for (i = l = 0, len1 = resolved_roles.length; l < len1; i = ++l) {
-          role = resolved_roles[i];
-          results.push(message.react(role.emoji).then((messageReaction) => {
-            // Add this role to the role_message, so reactions will trigger role assignments
-            return role_message.addRole(role).then(console.log).catch(console.error);
-          }).catch(console.error));
-        }
-        return results;
+          results = [];
+          for (i = l = 0, len1 = resolved_roles.length; l < len1; i = ++l) {
+            role = resolved_roles[i];
+            results.push(message.react(role.emoji).then((messageReaction) => {
+              // Add this role to the role_message, so reactions will trigger role assignments
+              return role_message.addRole(role).then(console.log).catch(console.error);
+            }).catch(console.error));
+          }
+          return results;
+        }).catch(console.error);
       }).catch(console.error);
     }).catch(console.error);
   };

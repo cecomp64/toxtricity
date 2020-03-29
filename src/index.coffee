@@ -211,19 +211,21 @@ create_role_assignments = (words, channel) =>
       console.log(role.name)
       message_content = "#{message_content}#{role.description}\n"
 
-    # Send the message
-    console.log(message_content)
-    channel.send(message_content).then((message) =>
-      # Why is message undefined!?!?!?!?!?
-      console.log(message)
-      role_message = RoleMessage.create({message_id: message.id})
+    # Fetch the channel for good measure...
+    channel.fetch().then((_channel) =>
+      # Send the message
+      channel.send(message_content).then((message) =>
+        # Why is message undefined!?!?!?!?!?
+        console.log(message)
+        role_message = RoleMessage.create({message_id: message.id})
 
-      # Add placeholder reactions
-      for role, i in resolved_roles
-        message.react(role.emoji).then((messageReaction) =>
-          # Add this role to the role_message, so reactions will trigger role assignments
-          role_message.addRole(role).then(console.log).catch(console.error)
-        ).catch(console.error)
+        # Add placeholder reactions
+        for role, i in resolved_roles
+          message.react(role.emoji).then((messageReaction) =>
+            # Add this role to the role_message, so reactions will trigger role assignments
+            role_message.addRole(role).then(console.log).catch(console.error)
+          ).catch(console.error)
+      ).catch(console.error)
     ).catch(console.error)
   ).catch(console.error)
 
