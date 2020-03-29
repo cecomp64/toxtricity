@@ -99,7 +99,7 @@ Choice = sequelize.define('choice', {
   count: Sequelize.INTEGER,
 })
 
-Choice.belongs_to(Poll)
+Choice.belongsTo(Poll)
 
 # Update models
 sequelize.sync()
