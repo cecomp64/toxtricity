@@ -204,6 +204,7 @@ create_role_assignments = (words, channel) =>
               # Add this role to the role_message, so reactions will trigger role assignments
               role_message.addRole(role).then(console.log).catch(console.error)
 
+              console.log("Default permissions: #{Discord.Permissions.DEFAULT}")
               # Create role
               guild.roles.create({
                 data: {
