@@ -264,7 +264,7 @@
   // Put this at the end because syntax highlighting is sad
   tokenize = (str, separator) => {
     var regex, tokens;
-    regex = new RegExp(`${seaprator}+`);
+    regex = new RegExp(`${separator}+`);
     tokens = str.split(regex).filter(function(el) {
       return el !== '';
     }).map(function(el) {

@@ -239,6 +239,6 @@ client.on("message", (message) =>
 
 # Put this at the end because syntax highlighting is sad
 tokenize = (str, separator) =>
-  regex = new RegExp("#{seaprator}+")
+  regex = new RegExp("#{separator}+")
   tokens = str.split(regex).filter((el) -> el != '').map((el) -> el.trim())
   return tokens
