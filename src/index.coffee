@@ -2,11 +2,21 @@
 #
 # Objectives
 #   - Enable bot in certain channels only to avoid spam
-#     - r! tox-bot enable
+#     - !tb tox-bot enable
 #   - Assign a role from emoji reaction
 #     - Message should indicate role-emoji dictionary
 #     - Also create the role
 #       - guild.roles.create({ data: { name: 'Mod', permissions: ['MANAGE_MESSAGES', 'KICK_MEMBERS'] } });
+#     - Other bot examples
+#       - !tb add [channel] emoji role, emoji role, emoji role ...
+#       - Saves to a database!?
+#         - Maybe just check if role already exists
+#   - Query available roles
+#   - Randomly pick from a list
+#     - Who goes first, what game to play, etc
+#   - Polls, voting
+#     - Close poll with a reaction
+#     - Show results with a reaction
 #   - Assign a role when users say something for the first time in a channel
 #     - i.e. Say hi in board-games to be added to @board-games
 #     - Enable when an admin gives a command r! chat-role <role>
@@ -18,11 +28,83 @@
 
 
 Discord = require('discord.js-light')
+Sequelize = require('sequelize')
 client = new Discord.Client()
 secret = process.env.DISCORD_TOKEN
 my_id = 1234
 
-print_reaction = (emoji, user, author, message) ->
+# Connect to database
+sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect:  'postgres',
+  protocol: 'postgres'
+})
+
+# Create a model
+Boardgame = sequelize.define('boardgame', {
+  name: {
+    type: Sequelize.STRING,
+    unique: true,
+    allowNull: false,
+  },
+  min_age: Sequelize.INTEGER,
+  min_time: Sequelize.INTEGER,
+  max_time: Sequelize.INTEGER,
+  min_players: Sequelize.INTEGER,
+  max_players: Sequelize.INTEGER,
+  bgg_score: Sequelize.FLOAT,
+  tabletopia: Sequelize.TEXT,
+})
+
+RoleMessage = sequelize.define('role_message', {
+  message_id: {
+    type: Sequelize.STRING,
+    unique: true,
+  }
+})
+
+Role = sequelize.define('role', {
+  name: {
+    type: Sequelize.STRING,
+    unique: true,
+  },
+  emoji: {
+    type: Sequelize.STRING,
+    unique: true,
+  },
+}, {
+  getterMethods: {
+    description: () -> "#{this.emoji} #{this.name}",
+    reference: () -> "@#{this.name}",
+  }
+})
+
+Role.belongsToMany(RoleMessage, {through: 'RoleRoleMessage'})
+RoleMessage.belongsToMany(Role, {through: 'RoleRoleMessage'})
+
+Poll = sequelize.define('poll', {
+  message_id: {
+    type: Sequelize.STRING,
+    unique: true,
+    allowNull: false,
+  }
+})
+
+Choice = sequelize.define('choice', {
+  name: {
+    type: Sequelize.STRING,
+  },
+  emoji: {
+    type: Sequelize.STRING,
+  },
+  count: Sequelize.INTEGER,
+})
+
+Choice.belongs_to(Poll)
+
+# Update models
+sequelize.sync()
+
+print_reaction = (emoji, user, author, message) =>
   console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
   message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
 
@@ -37,13 +119,11 @@ client.login(secret)
 # https://gist.github.com/koad/316b265a91d933fd1b62dddfcc3ff584
 # messageReactionAdd
 client.on("messageReactionAdd", (messageReaction, user) =>
-  # In discord.js-light, message is a *partial* (just ID)
-  #  channel.messages.fetch(id)
+  # In discord.js-light, message is a *partial*
   message = messageReaction.message
   channel = message.channel
 
   console.log("Message partial: #{message.partial}")
-
   console.log("Message ID: #{message.id}")
 
   # Fetch that message... always?  What if it is already cached?
@@ -57,13 +137,95 @@ client.on("messageReactionAdd", (messageReaction, user) =>
       # The first one is the one for this reaction!?  Check them all?
       user = users.first()
       print_reaction(emoji, user, author, message)
-    )
-  )
+    ).catch(console.error)
+
+  ).catch(console.error)
 
   # Message format:
   #  Some text instructions
 )
 
+parse_poll = (message) =>
+  return 1
+
+
+# find_or_create_role
+#
+# Use the name to find a role.  If none exists, create it and give it an emoji.
+find_or_create_role = (emoji, name)  =>
+  # Sanity check emoji starts and ends with ::
+  chars = emoji.split()
+  return null if((chars[0] != ':' || chars[chars.length-1] != ':'))
+
+  Role.findByName(name).then(role =>
+    if(role == null)
+      Role.create({emoji: emoji, name: name}).then(new_role =>
+        return new_role
+      )
+    else
+      return role
+  ).catch(console.error)
+
+  return null
+
+# create_role_assignments
+#
+# words - the remaining, tokenized command of the format: :foo: Role Name1, :bar: Role Name2, ...
+# channel - what channel to post the role message in
+#
+# Send a message to the given channel with the parsed out roles.  Create the RoleMessage object with the associated
+# Roles.  Create any Roles that do not already exist.
+create_role_assignments = (words, channel) =>
+  roles = []
+
+  # what remains should be emoji, role pairs
+  str = words.join(' ')
+  tokens = str.split(',')
+
+  # Process each role with its emoji
+  for i in [0..tokens.length]
+    entry_words = tokens[i].split(' ')
+    emoji = entry_words.shift()
+    name = entry_words.join(' ')
+
+    roles.push find_or_create_role(emoji, name)
+
+  # Remove failed roles
+  roles = roles.filter(el -> el != null)
+
+  return null if(roles.length == 0)
+
+  # Create the message to assign roles!
+  message_content = "Respond with an emoji to assign yourself one of the following roles: \n"
+
+  for role, i in roles
+    message_content = "#{message_content}#{role.description}\n"
+
+  # Send the message
+  channel.send(message_content).then(message =>
+    role_message = RoleMessage.create({message_id: message.id})
+
+    # Add placeholder reactions
+    for role, i in roles
+      message.react(role.emoji).then(messageReaction =>
+        # Add this role to the role_message, so reactions will trigger role assignments
+        role_message.addRole(role).then(console.log).catch(console.error)
+      ).catch(console.error)
+  )
+
 client.on("message", (message) =>
-  console.log(message.content)
+  words = message.content.split(' ')
+  console.log(words)
+
+  first_word = words.shift()
+  command = words.shift()
+
+  if(first_word == 'tb!')
+    console.log(command)
+
+    switch command
+      when 'poll'
+        return 1
+      when 'roles'
+        create_role_assignments(words, message.channel)
 )

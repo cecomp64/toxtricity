@@ -4,11 +4,21 @@
 
   // Objectives
   //   - Enable bot in certain channels only to avoid spam
-  //     - r! tox-bot enable
+  //     - !tb tox-bot enable
   //   - Assign a role from emoji reaction
   //     - Message should indicate role-emoji dictionary
   //     - Also create the role
   //       - guild.roles.create({ data: { name: 'Mod', permissions: ['MANAGE_MESSAGES', 'KICK_MEMBERS'] } });
+  //     - Other bot examples
+  //       - !tb add [channel] emoji role, emoji role, emoji role ...
+  //       - Saves to a database!?
+  //         - Maybe just check if role already exists
+  //   - Query available roles
+  //   - Randomly pick from a list
+  //     - Who goes first, what game to play, etc
+  //   - Polls, voting
+  //     - Close poll with a reaction
+  //     - Show results with a reaction
   //   - Assign a role when users say something for the first time in a channel
   //     - i.e. Say hi in board-games to be added to @board-games
   //     - Enable when an admin gives a command r! chat-role <role>
@@ -16,9 +26,12 @@
   //   - Quotes
   //     - Access the quotebook via API for a random quote
   //     - Band names
-  var Discord, client, my_id, print_reaction, secret;
+  //   - Spin up a tabletopia game or link
+  var Boardgame, Choice, Discord, Poll, Role, RoleMessage, Sequelize, client, create_role_assignments, find_or_create_role, my_id, parse_poll, print_reaction, secret, sequelize;
 
   Discord = require('discord.js-light');
+
+  Sequelize = require('sequelize');
 
   client = new Discord.Client();
 
@@ -26,7 +39,87 @@
 
   my_id = 1234;
 
-  print_reaction = function(emoji, user, author, message) {
+  // Connect to database
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    protocol: 'postgres'
+  });
+
+  // Create a model
+  Boardgame = sequelize.define('boardgame', {
+    name: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: false
+    },
+    min_age: Sequelize.INTEGER,
+    min_time: Sequelize.INTEGER,
+    max_time: Sequelize.INTEGER,
+    min_players: Sequelize.INTEGER,
+    max_players: Sequelize.INTEGER,
+    bgg_score: Sequelize.FLOAT,
+    tabletopia: Sequelize.TEXT
+  });
+
+  RoleMessage = sequelize.define('role_message', {
+    message_id: {
+      type: Sequelize.STRING,
+      unique: true
+    }
+  });
+
+  Role = sequelize.define('role', {
+    name: {
+      type: Sequelize.STRING,
+      unique: true
+    },
+    emoji: {
+      type: Sequelize.STRING,
+      unique: true
+    }
+  }, {
+    getterMethods: {
+      description: function() {
+        return `${this.emoji} ${this.name}`;
+      },
+      reference: function() {
+        return `@${this.name}`;
+      }
+    }
+  });
+
+  Role.belongsToMany(RoleMessage, {
+    through: 'RoleRoleMessage'
+  });
+
+  RoleMessage.belongsToMany(Role, {
+    through: 'RoleRoleMessage'
+  });
+
+  Poll = sequelize.define('poll', {
+    message_id: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: false
+    }
+  });
+
+  Choice = sequelize.define('choice', {
+    name: {
+      type: Sequelize.STRING
+    },
+    emoji: {
+      type: Sequelize.STRING
+    },
+    count: Sequelize.INTEGER
+  });
+
+  Choice.belongs_to(Poll);
+
+  // Update models
+  sequelize.sync();
+
+  print_reaction = (emoji, user, author, message) => {
     console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
     return message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
   };
@@ -43,8 +136,7 @@
   // messageReactionAdd
   client.on("messageReactionAdd", (messageReaction, user) => {
     var channel, message;
-    // In discord.js-light, message is a *partial* (just ID)
-    //  channel.messages.fetch(id)
+    // In discord.js-light, message is a *partial*
     message = messageReaction.message;
     channel = message.channel;
     console.log(`Message partial: ${message.partial}`);
@@ -55,17 +147,113 @@
       author = message.author;
       console.log(`Author: ${author}`);
       emoji = messageReaction.emoji.name;
-      return user = messageReaction.users.fetch().then((users) => {
+      // Fetch those users!
+      return messageReaction.users.fetch().then((users) => {
+        // The first one is the one for this reaction!?  Check them all?
         user = users.first();
         return print_reaction(emoji, user, author, message);
-      });
-    });
+      }).catch(console.error);
+    }).catch(console.error);
   });
 
   // Message format:
   //  Some text instructions
+  parse_poll = (message) => {
+    return 1;
+  };
+
+  // find_or_create_role
+
+  // Use the name to find a role.  If none exists, create it and give it an emoji.
+  find_or_create_role = (emoji, name) => {
+    var chars;
+    // Sanity check emoji starts and ends with ::
+    chars = emoji.split();
+    if (chars[0] !== ':' || chars[chars.length - 1] !== ':') {
+      return null;
+    }
+    Role.findByName(name).then(role(() => {
+      if (role === null) {
+        return Role.create({
+          emoji: emoji,
+          name: name
+        }).then(new_role(() => {
+          return new_role;
+        }));
+      } else {
+        return role;
+      }
+    })).catch(console.error);
+    return null;
+  };
+
+  // create_role_assignments
+
+  // words - the remaining, tokenized command of the format: :foo: Role Name1, :bar: Role Name2, ...
+  // channel - what channel to post the role message in
+
+  // Send a message to the given channel with the parsed out roles.  Create the RoleMessage object with the associated
+  // Roles.  Create any Roles that do not already exist.
+  create_role_assignments = (words, channel) => {
+    var emoji, entry_words, i, j, k, len, message_content, name, ref, role, roles, str, tokens;
+    roles = [];
+    // what remains should be emoji, role pairs
+    str = words.join(' ');
+    tokens = str.split(',');
+// Process each role with its emoji
+    for (i = j = 0, ref = tokens.length; (0 <= ref ? j <= ref : j >= ref); i = 0 <= ref ? ++j : --j) {
+      entry_words = tokens[i].split(' ');
+      emoji = entry_words.shift();
+      name = entry_words.join(' ');
+      roles.push(find_or_create_role(emoji, name));
+    }
+    // Remove failed roles
+    roles = roles.filter(el(function() {
+      return el !== null;
+    }));
+    if (roles.length === 0) {
+      return null;
+    }
+    // Create the message to assign roles!
+    message_content = "Respond with an emoji to assign yourself one of the following roles: \n";
+    for (i = k = 0, len = roles.length; k < len; i = ++k) {
+      role = roles[i];
+      message_content = `${message_content}${role.description}\n`;
+    }
+    // Send the message
+    return channel.send(message_content).then(message(() => {
+      var l, len1, results, role_message;
+      role_message = RoleMessage.create({
+        message_id: message.id
+      });
+// Add placeholder reactions
+      results = [];
+      for (i = l = 0, len1 = roles.length; l < len1; i = ++l) {
+        role = roles[i];
+        results.push(message.react(role.emoji).then(messageReaction(() => {
+          // Add this role to the role_message, so reactions will trigger role assignments
+          return role_message.addRole(role).then(console.log).catch(console.error);
+        })).catch(console.error));
+      }
+      return results;
+    }));
+  };
+
   client.on("message", (message) => {
-    return console.log(message.content);
+    var command, first_word, words;
+    words = message.content.split(' ');
+    console.log(words);
+    first_word = words.shift();
+    command = words.shift();
+    if (first_word === 'tb!') {
+      console.log(command);
+      switch (command) {
+        case 'poll':
+          return 1;
+        case 'roles':
+          return create_role_assignments(words, message.channel);
+      }
+    }
   });
 
 }).call(this);
