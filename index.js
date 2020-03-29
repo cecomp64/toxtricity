@@ -231,6 +231,7 @@
         message_content = `${message_content}${role.description}\n`;
       }
       // Send the message
+      console.log(message_content);
       return channel.send(message_content).then((message) => {
         var l, len1, results, role_message;
         // Why is message undefined!?!?!?!?!?
@@ -248,7 +249,7 @@
           }).catch(console.error));
         }
         return results;
-      });
+      }).catch(console.error);
     }).catch(console.error);
   };
 

@@ -212,6 +212,7 @@ create_role_assignments = (words, channel) =>
       message_content = "#{message_content}#{role.description}\n"
 
     # Send the message
+    console.log(message_content)
     channel.send(message_content).then((message) =>
       # Why is message undefined!?!?!?!?!?
       console.log(message)
@@ -223,7 +224,7 @@ create_role_assignments = (words, channel) =>
           # Add this role to the role_message, so reactions will trigger role assignments
           role_message.addRole(role).then(console.log).catch(console.error)
         ).catch(console.error)
-    )
+    ).catch(console.error)
   ).catch(console.error)
 
 client.on("message", (message) =>
