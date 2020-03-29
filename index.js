@@ -233,6 +233,7 @@
       // Send the message
       return channel.send(message_content).then((message) => {
         var l, len1, results, role_message;
+        // Why is message undefined!?!?!?!?!?
         console.log(message);
         role_message = RoleMessage.create({
           message_id: message.id
@@ -263,6 +264,9 @@
         case 'poll':
           return 1;
         case 'roles':
+          message.channel.send("Trying to create message...").then((message) => {
+            return console.log(message.content);
+          });
           return create_role_assignments(words, message.channel);
       }
     }
