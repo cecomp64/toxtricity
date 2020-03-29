@@ -207,20 +207,19 @@
       return channel.fetch().then((_channel) => {
         // Send the message
         return _channel.send(message_content).then((message) => {
-          var guild, load_data, role_message;
+          var load_data;
           console.log(message);
-          // Create the role message to lookup on reaction
-          role_message = RoleMessage.create({
-            message_id: message.id
-          });
-          guild = message.guild.fetch();
-          // Wait for them both...
           load_data = [];
-          load_data.push(role_message);
-          load_data.push(guild);
           // Create the role message to lookup on reaction
+          load_data.push(RoleMessage.create({
+            message_id: message.id
+          }));
+          load_data.push(message.guild.fetch());
+          // Wait for them both...
           return Promise.all(load_data).then((loaded_data) => {
-            var l, len1, results;
+            var guild, l, len1, results, role_message;
+            role_message = loaded_data[0];
+            guild = loaded_data[1];
 // Add placeholder reactions
             results = [];
             for (i = l = 0, len1 = resolved_roles.length; l < len1; i = ++l) {

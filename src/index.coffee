@@ -187,18 +187,17 @@ create_role_assignments = (words, channel) =>
       # Send the message
       _channel.send(message_content).then((message) =>
         console.log(message)
+        load_data = []
 
         # Create the role message to lookup on reaction
-        role_message = RoleMessage.create({message_id: message.id})
-        guild = message.guild.fetch()
+        load_data.push(RoleMessage.create({message_id: message.id}))
+        load_data.push(message.guild.fetch())
 
         # Wait for them both...
-        load_data = []
-        load_data.push(role_message)
-        load_data.push(guild)
-
-        # Create the role message to lookup on reaction
         Promise.all(load_data).then( (loaded_data) =>
+          role_message = loaded_data[0]
+          guild = loaded_data[1]
+
           # Add placeholder reactions
           for role, i in resolved_roles
             message.react(role.emoji).then((messageReaction) =>
