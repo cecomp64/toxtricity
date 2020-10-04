@@ -25,6 +25,12 @@
 #     - Access the quotebook via API for a random quote
 #     - Band names
 #   - Spin up a tabletopia game or link
+#   - r!games r!playnow
+#     - Scribbl.io - https://skribbl.io
+#     - tabletopia - simple link to tabletopia.com
+#     - Pokemon Showdown
+#     - Pokemon TCGO
+
 
 
 Discord = require('discord.js-light')
@@ -210,7 +216,7 @@ create_role_assignments = (words, channel) =>
               # Add this role to the role_message, so reactions will trigger role assignments
               role_message.addRole(role).then(console.log).catch(console.error)
 
-              console.log("Default permissions: #{Discord.Permissions.DEFAULT}")
+              # Check if role already exists
               # Create role
               guild.roles.create({
                 data: {
