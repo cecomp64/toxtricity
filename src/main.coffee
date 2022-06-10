@@ -35,93 +35,18 @@
 #  https://stackoverflow.com/questions/27687546/cant-connect-to-heroku-postgresql-database-from-local-node-app-with-sequelize
 #  https://discord.js.org/#/docs/discord.js/main/class/Client?scrollTo=e-messageCreate
 
+Database = require('/app/lib/database')
+Role = Database.Role
+RoleMessage = Database.RoleMessage
+
+
 Discord = require('discord.js-light')
-Sequelize = require('sequelize')
 client = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
 })
 
 secret = process.env.DISCORD_TOKEN
 my_id = 1234
-
-# Connect to database
-sequelize = new Sequelize(process.env.DATABASE_URL, {
-  logging: false,
-  dialect:  'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
-  }
-})
-
-# Create a model
-Boardgame = sequelize.define('boardgame', {
-  name: {
-    type: Sequelize.STRING,
-    unique: true,
-    allowNull: false,
-  },
-  min_age: Sequelize.INTEGER,
-  min_time: Sequelize.INTEGER,
-  max_time: Sequelize.INTEGER,
-  min_players: Sequelize.INTEGER,
-  max_players: Sequelize.INTEGER,
-  bgg_score: Sequelize.FLOAT,
-  tabletopia: Sequelize.TEXT,
-})
-
-RoleMessage = sequelize.define('role_message', {
-  message_id: {
-    type: Sequelize.STRING,
-    unique: true,
-  }
-})
-
-Role = sequelize.define('role', {
-  name: {
-    type: Sequelize.STRING,
-    unique: true,
-  },
-  emoji: {
-    type: Sequelize.STRING,
-    unique: true,
-  },
-}, {
-  getterMethods: {
-    description: () -> "#{this.emoji} #{this.name}",
-    reference: () -> "@#{this.name}",
-  }
-})
-
-Role.belongsToMany(RoleMessage, {through: 'RoleRoleMessage'})
-RoleMessage.belongsToMany(Role, {through: 'RoleRoleMessage'})
-
-Poll = sequelize.define('poll', {
-  message_id: {
-    type: Sequelize.STRING,
-    unique: true,
-    allowNull: false,
-  }
-})
-
-Choice = sequelize.define('choice', {
-  name: {
-    type: Sequelize.STRING,
-  },
-  emoji: {
-    type: Sequelize.STRING,
-  },
-  count: Sequelize.INTEGER,
-})
-
-Choice.belongsTo(Poll)
-
-# Update models
-sequelize.sync({force: true}).then(() =>
-  console.log('Synced!')
-).catch(console.error)
 
 print_reaction = (emoji, user, author, message) =>
   console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
@@ -297,7 +222,7 @@ client.on("messageReactionAdd", (messageReaction, user) =>
       print_reaction(emoji, user, author, message)
 
       # Find the role for this emoji
-      role = get_role()
+      #role = get_role()
 
     ).catch(console.error)
 
