@@ -252,7 +252,7 @@ create_role_assignments = (words, channel) =>
 # message
 #
 # Parse commands
-client.on("message", (message) =>
+client.on("messageCreate", (message) =>
   words = tokenize(message.content, ' ')
   console.log(words)
 

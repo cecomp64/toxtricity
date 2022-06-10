@@ -280,7 +280,7 @@
   // message
 
   // Parse commands
-  client.on("message", (message) => {
+  client.on("messageCreate", (message) => {
     var command, first_word, words;
     words = tokenize(message.content, ' ');
     console.log(words);
