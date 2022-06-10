@@ -1,2 +1,2 @@
 all:
-	coffee -o . -c src/*
+	coffee -o lib/ -c src/*

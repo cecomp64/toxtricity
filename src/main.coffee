@@ -295,6 +295,10 @@ client.on("messageReactionAdd", (messageReaction, user) =>
       # The first one is the one for this reaction!?  Check them all?
       user = users.first()
       print_reaction(emoji, user, author, message)
+
+      # Find the role for this emoji
+      role = get_role()
+
     ).catch(console.error)
 
   ).catch(console.error)
