@@ -49,7 +49,7 @@
 
   // Connect to database
   sequelize = new Sequelize(process.env.DATABASE_URL, {
-    logging: true,
+    logging: console.log,
     dialect: 'postgres',
     protocol: 'postgres',
     dialectOptions: {
