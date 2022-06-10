@@ -139,7 +139,9 @@
   client.once('ready', () => {
     console.log('Ready!');
     // Update models
-    return sequelize.sync().then((result) => {
+    return sequelize.sync({
+      force: true
+    }).then((result) => {
       return console.log(result);
     }).catch(console.error);
   });

@@ -123,7 +123,7 @@ client.once('ready', () =>
   console.log('Ready!')
 
   # Update models
-  sequelize.sync().then((result) =>
+  sequelize.sync({force: true}).then((result) =>
     console.log(result)
   ).catch(console.error)
 
