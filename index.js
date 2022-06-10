@@ -50,8 +50,7 @@
   my_id = 1234;
 
   // Connect to database
-  sequelize = new Sequelize(process.env.DATABASE_URL + "?sslmode=require", {
-    url: process.env.DATABASE_URL,
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
     logging: false,
     dialect: 'postgres',
     dialectOptions: {
