@@ -141,6 +141,7 @@
     console.log('Ready!!!');
     // Update models
     return sequelize.sync().then((result) => {
+      console.log('Synced!');
       return console.log(result);
     }).catch(console.error);
   });

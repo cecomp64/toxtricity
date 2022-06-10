@@ -125,6 +125,7 @@ client.once('ready', () =>
 
   # Update models
   sequelize.sync().then((result) =>
+    console.log('Synced!')
     console.log(result)
   ).catch(console.error)
 
