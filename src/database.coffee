@@ -76,7 +76,7 @@ Database = () =>
   Choice.belongsTo(Poll)
 
   # Update models
-  sequelize.sync({force: true}).then(() =>
+  sequelize.sync().then(() =>
     console.log('Synced!')
   ).catch(console.error)
 
