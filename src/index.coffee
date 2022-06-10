@@ -259,6 +259,8 @@ client.on("message", (message) =>
   first_word = words.shift()
   command = words.shift()
 
+  console.log('Handling Message')
+
   if(first_word == 'tb!')
     console.log(command)
 
