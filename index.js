@@ -132,9 +132,10 @@
   Choice.belongsTo(Poll);
 
   // Update models
-  sequelize.sync().then((result) => {
-    console.log('Synced!');
-    return console.log(result);
+  sequelize.sync({
+    force: true
+  }).then(() => {
+    return console.log('Synced!');
   }).catch(console.error);
 
   print_reaction = (emoji, user, author, message) => {

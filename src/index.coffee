@@ -116,9 +116,8 @@ Choice = sequelize.define('choice', {
 Choice.belongsTo(Poll)
 
 # Update models
-sequelize.sync().then((result) =>
+sequelize.sync({force: true}).then(() =>
   console.log('Synced!')
-  console.log(result)
 ).catch(console.error)
 
 print_reaction = (emoji, user, author, message) =>
