@@ -32,6 +32,9 @@
   //     - tabletopia - simple link to tabletopia.com
   //     - Pokemon Showdown
   //     - Pokemon TCGO
+
+  // Helpful links
+  //  https://stackoverflow.com/questions/27687546/cant-connect-to-heroku-postgresql-database-from-local-node-app-with-sequelize
   var Boardgame, Choice, Discord, Poll, Role, RoleMessage, Sequelize, client, create_role_assignments, find_or_create_role, my_id, parse_poll, print_reaction, secret, sequelize, tokenize;
 
   Discord = require('discord.js-light');
@@ -128,7 +131,11 @@
   Choice.belongsTo(Poll);
 
   // Update models
-  sequelize.sync();
+  sequelize.sync().then((result) => {
+    return console.log(result);
+  }).catch((err) => {
+    return console.log(err);
+  });
 
   print_reaction = (emoji, user, author, message) => {
     console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
