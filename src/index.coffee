@@ -114,14 +114,6 @@ Choice = sequelize.define('choice', {
 
 Choice.belongsTo(Poll)
 
-# Update models
-sequelize.sync().then((result) =>
-  console.log(result)
-)
-.catch((err) =>
-  console.log(err)
-)
-
 print_reaction = (emoji, user, author, message) =>
   console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
   message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
@@ -129,6 +121,15 @@ print_reaction = (emoji, user, author, message) =>
 # Hola, mundo
 client.once('ready', () =>
   console.log('Ready!')
+
+  # Update models
+  sequelize.sync().then((result) =>
+    console.log(result)
+  )
+    .catch((err) =>
+    console.log(err)
+  )
+
 )
 
 client.login(secret)
