@@ -49,6 +49,7 @@
 
   // Connect to database
   sequelize = new Sequelize(process.env.DATABASE_URL, {
+    logging: true,
     dialect: 'postgres',
     protocol: 'postgres',
     dialectOptions: {
@@ -137,11 +138,9 @@
 
   // Hola, mundo
   client.once('ready', () => {
-    console.log('Ready!');
+    console.log('Ready!!!');
     // Update models
-    return sequelize.sync({
-      force: true
-    }).then((result) => {
+    return sequelize.sync().then((result) => {
       return console.log(result);
     }).catch(console.error);
   });

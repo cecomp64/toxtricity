@@ -42,6 +42,7 @@ my_id = 1234
 
 # Connect to database
 sequelize = new Sequelize(process.env.DATABASE_URL, {
+  logging: true,
   dialect:  'postgres',
   protocol: 'postgres',
   dialectOptions: {
@@ -120,10 +121,10 @@ print_reaction = (emoji, user, author, message) =>
 
 # Hola, mundo
 client.once('ready', () =>
-  console.log('Ready!')
+  console.log('Ready!!!')
 
   # Update models
-  sequelize.sync({force: true}).then((result) =>
+  sequelize.sync().then((result) =>
     console.log(result)
   ).catch(console.error)
 
