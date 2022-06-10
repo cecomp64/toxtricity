@@ -36,9 +36,8 @@
 #  https://discord.js.org/#/docs/discord.js/main/class/Client?scrollTo=e-messageCreate
 
 Database = require('/app/lib/database')
-db = new Database()
-Role = db.Role
-RoleMessage = db.RoleMessage
+Role = Database.Role
+RoleMessage = Database.RoleMessage
 
 
 Discord = require('discord.js-light')
