@@ -131,6 +131,12 @@
 
   Choice.belongsTo(Poll);
 
+  // Update models
+  sequelize.sync().then((result) => {
+    console.log('Synced!');
+    return console.log(result);
+  }).catch(console.error);
+
   print_reaction = (emoji, user, author, message) => {
     console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
     return message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
@@ -138,12 +144,7 @@
 
   // Hola, mundo
   client.once('ready', () => {
-    console.log('Ready!!!');
-    // Update models
-    return sequelize.sync().then((result) => {
-      console.log('Synced!');
-      return console.log(result);
-    }).catch(console.error);
+    return console.log('Ready!!!');
   });
 
   client.login(secret);
