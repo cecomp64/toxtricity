@@ -49,9 +49,9 @@
 
   // Connect to database
   sequelize = new Sequelize(process.env.DATABASE_URL + "?sslmode=require", {
-    logging: console.log,
+    url: process.env.DATABASE_URL,
+    logging: false,
     dialect: 'postgres',
-    protocol: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,
@@ -132,23 +132,24 @@
   Choice.belongsTo(Poll);
 
   // Update models
-  //sequelize.sync({force: true}).then(() =>
-  //  console.log('Synced!')
-  //).catch(console.error)
+  sequelize.sync({
+    force: true
+  }).then(() => {
+    return console.log('Synced!');
+  }).catch(console.error);
+
   print_reaction = (emoji, user, author, message) => {
     console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
     return message.channel.send("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!");
   };
 
   // Hola, mundo
-  client.once('ready', async() => {
-    console.log('Ready!!!');
-    await sequelize.sync({
-      force: true
-    });
-    return console.log("All models were synchronized successfully.");
+  client.once('ready', () => {
+    return console.log('Ready!!!');
   });
 
+  //await sequelize.sync({ force: true })
+  //console.log("All models were synchronized successfully.")
   client.login(secret);
 
   parse_poll = (message) => {
