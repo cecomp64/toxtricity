@@ -1,1 +1,1 @@
-require('lib/main');
+require('/app/lib/main');
