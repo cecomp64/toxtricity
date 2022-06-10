@@ -35,6 +35,7 @@
 
   // Helpful links
   //  https://stackoverflow.com/questions/27687546/cant-connect-to-heroku-postgresql-database-from-local-node-app-with-sequelize
+  //  https://discord.js.org/#/docs/discord.js/main/class/Client?scrollTo=e-messageCreate
   var Boardgame, Choice, Discord, Poll, Role, RoleMessage, Sequelize, client, create_role_assignments, find_or_create_role, my_id, parse_poll, print_reaction, secret, sequelize, tokenize;
 
   Discord = require('discord.js-light');
@@ -236,12 +237,13 @@
           load_data.push(RoleMessage.create({
             message_id: message.id
           }));
-          load_data.push(message.guild.fetch());
+          //load_data.push(message.guild.fetch())
+
           // Wait for them both...
           return Promise.all(load_data).then((loaded_data) => {
             var guild, l, len1, reactionsAsync, role_message;
             role_message = loaded_data[0];
-            guild = loaded_data[1];
+            guild = message.guild;
             // Add placeholder reactions
             reactionsAsync = [];
             for (i = l = 0, len1 = resolved_roles.length; l < len1; i = ++l) {

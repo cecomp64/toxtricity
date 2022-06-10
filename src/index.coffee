@@ -33,6 +33,7 @@
 
 # Helpful links
 #  https://stackoverflow.com/questions/27687546/cant-connect-to-heroku-postgresql-database-from-local-node-app-with-sequelize
+#  https://discord.js.org/#/docs/discord.js/main/class/Client?scrollTo=e-messageCreate
 
 Discord = require('discord.js-light')
 Sequelize = require('sequelize')
@@ -212,12 +213,12 @@ create_role_assignments = (words, channel) =>
 
         # Create the role message to lookup on reaction
         load_data.push(RoleMessage.create({message_id: message.id}))
-        load_data.push(message.guild.fetch())
+        #load_data.push(message.guild.fetch())
 
         # Wait for them both...
         Promise.all(load_data).then( (loaded_data) =>
           role_message = loaded_data[0]
-          guild = loaded_data[1]
+          guild = message.guild
 
           # Add placeholder reactions
           reactionsAsync = []
