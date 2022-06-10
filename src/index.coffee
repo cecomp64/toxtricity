@@ -42,7 +42,8 @@ my_id = 1234
 # Connect to database
 sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect:  'postgres',
-  protocol: 'postgres'
+  protocol: 'postgres',
+  ssl: true
 })
 
 # Create a model

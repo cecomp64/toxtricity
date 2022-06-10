@@ -27,6 +27,11 @@
   //     - Access the quotebook via API for a random quote
   //     - Band names
   //   - Spin up a tabletopia game or link
+  //   - r!games r!playnow
+  //     - Scribbl.io - https://skribbl.io
+  //     - tabletopia - simple link to tabletopia.com
+  //     - Pokemon Showdown
+  //     - Pokemon TCGO
   var Boardgame, Choice, Discord, Poll, Role, RoleMessage, Sequelize, client, create_role_assignments, find_or_create_role, my_id, parse_poll, print_reaction, secret, sequelize, tokenize;
 
   Discord = require('discord.js-light');
@@ -42,7 +47,8 @@
   // Connect to database
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
-    protocol: 'postgres'
+    protocol: 'postgres',
+    ssl: true
   });
 
   // Create a model
@@ -234,7 +240,7 @@
                 role = resolved_roles[i];
                 // Add this role to the role_message, so reactions will trigger role assignments
                 role_message.addRole(role).then(console.log).catch(console.error);
-                console.log(`Default permissions: ${Discord.Permissions.DEFAULT}`);
+                // Check if role already exists
                 // Create role
                 results.push(guild.roles.create({
                   data: {
