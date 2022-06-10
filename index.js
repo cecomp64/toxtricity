@@ -141,7 +141,7 @@
     // Update models
     return sequelize.sync().then((result) => {
       return console.log(result);
-    }).catch((err) => {}, console.log(err));
+    }).catch(console.error);
   });
 
   client.login(secret);
