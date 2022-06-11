@@ -40,6 +40,7 @@ Database = require('../lib/database')
 Role = Database.Role
 RoleMessage = Database.RoleMessage
 
+Validation = require('../lib/validation')
 
 Discord = require('discord.js-light')
 client = new Discord.Client({
@@ -79,15 +80,19 @@ create_role_assignments = (words, channel) =>
   roles = []
 
   # what remains should be emoji, role pairs
-  str = words.join(' ')
-  tokens = tokenize(str, ',')
-  console.log(tokens)
+  pairs = words
+
+  #If errors are present log and return
+  errorMessages = Validation.validate_pairs(pairs)
+  if(errorMessages.length > 0)
+    console.log("Error Validating Roles: "+errorMessages)
+    return
 
   # Process each role with its emoji
-  for i in [0..tokens.length-1]
-    entry_words = tokens[i].split(' ')
-    emoji = entry_words.shift()
-    name = entry_words.join(' ')
+  for i in [0..pairs.length-1]
+    pair = pairs[i].split(",")
+    name = pair[0]
+    emoji = pair[1]
 
     roles.push Database.find_or_create_role(emoji, name)
 
