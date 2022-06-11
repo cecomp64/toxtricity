@@ -6,16 +6,20 @@
 Sequelize = require('sequelize')
 
 # Connect to database
-sequelize = new Sequelize(process.env.DATABASE_URL, {
-  logging: false,
-  dialect:  'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
+sequelize = switch process.env.DATABASE_TYPE
+  when 'sqlite' then new Sequelize('sqlite::memory:');
+  else new Sequelize(process.env.DATABASE_URL, {
+    logging: false,
+    dialect:  'postgres',
+    url: process.env.DATABASE_URL,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
     }
-  }
-})
+  })
+
 
 # Create a model
 Boardgame = sequelize.define('boardgame', {
