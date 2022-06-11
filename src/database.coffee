@@ -4,10 +4,11 @@
 #
 ################################################
 Sequelize = require('sequelize')
+Path = require('path')
 
 # Connect to database
 sequelize = switch process.env.DATABASE_TYPE
-  when 'sqlite' then new Sequelize('sqlite::memory:');
+  when 'sqlite' then new Sequelize('sqlite::memory:', {storage: Path.join(__dirname, '..', 'dev.sqlite')});
   else new Sequelize(process.env.DATABASE_URL, {
     logging: false,
     dialect:  'postgres',
