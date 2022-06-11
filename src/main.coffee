@@ -34,8 +34,9 @@
 # Helpful links
 #  https://stackoverflow.com/questions/27687546/cant-connect-to-heroku-postgresql-database-from-local-node-app-with-sequelize
 #  https://discord.js.org/#/docs/discord.js/main/class/Client?scrollTo=e-messageCreate
+#  https://www.npmjs.com/package/discord.js-light
 
-Database = require('/app/lib/database')
+Database = require('../lib/database')
 Role = Database.Role
 RoleMessage = Database.RoleMessage
 
@@ -119,6 +120,8 @@ create_role_assignments = (words, channel) =>
         # Wait for them both...
         Promise.all(load_data).then( (loaded_data) =>
           role_message = loaded_data[0]
+
+          # FIXME: message.guild is null - how do we get the guild so we can create roles?
           guild = message.guild
 
           # Add placeholder reactions
