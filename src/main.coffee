@@ -76,7 +76,7 @@ parse_poll = (message) =>
 #
 # Send a message to the given channel with the parsed out roles.  Create the RoleMessage object with the associated
 # Roles.  Create any Roles that do not already exist.
-create_role_assignments = (words, channel) =>
+create_role_assignments = (words, channel, guild) =>
   roles = []
 
   #If errors are present log and return
@@ -110,14 +110,10 @@ create_role_assignments = (words, channel) =>
 
         # Create the role message to lookup on reaction
         load_data.push(RoleMessage.create({message_id: message.id}))
-        #load_data.push(message.guild.fetch())
 
         # Wait for them both...
         Promise.all(load_data).then( (loaded_data) =>
           role_message = loaded_data[0]
-
-          # FIXME: message.guild is null - how do we get the guild so we can create roles?
-          guild = message.guild
 
           # Add placeholder reactions
           reactionsAsync = []
@@ -134,12 +130,10 @@ create_role_assignments = (words, channel) =>
               # Check if role already exists
               # Create role
               guild.roles.create({
-                data: {
-                  name: role.name,
-                  mentionable: true,
-                  position: 4,
-                  permissions: Discord.Permissions.DEFAULT,
-                },
+                name: role.name,
+                mentionable: true,
+                #position: 4,
+                permissions: Discord.Permissions.DEFAULT,
                 reason: "To stay informed about #{role.name}",
               }).then(console.log).catch(console.error)
             ).catch(console.error)
@@ -168,7 +162,7 @@ client.on("messageCreate", (message) =>
       when 'poll'
         return 1
       when 'roles'
-        create_role_assignments(words, message.channel)
+        create_role_assignments(words, message.channel, message.guild)
 )
 
 # messageReactionAdd
