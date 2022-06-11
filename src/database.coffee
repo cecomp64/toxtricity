@@ -1,3 +1,8 @@
+################################################
+#
+#  Database Configuration and Schema
+#
+################################################
 Sequelize = require('sequelize')
 
 # Connect to database
@@ -81,3 +86,33 @@ sequelize.sync().then(() =>
 
 module.exports.Role = Role
 module.exports.RoleMessage = RoleMessage
+
+################################################
+#
+#  Database Helpers
+#
+################################################
+
+# find_or_create_role
+#
+# Use the name to find a role.  If none exists, create it and give it an emoji.
+module.exports.find_or_create_role = (emoji, name)  =>
+  # Gut check emoji starts and ends with ::
+  if(emoji.charCodeAt(0) <= 255) # Unicode at least...
+    console.log("find_or_create_role: emoji argument failed sanity check #{emoji}")
+    return null
+
+  ret_role = Role.findOne({
+    where: {
+      name: name
+    }
+  }).then((role) =>
+    if(role == null)
+      return Role.create({emoji: emoji, name: name}).then((new_role) =>
+        return new_role
+      ).catch(console.error)
+    else
+      return role
+  ).catch(console.error)
+
+  return ret_role
