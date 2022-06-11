@@ -79,22 +79,12 @@ parse_poll = (message) =>
 create_role_assignments = (words, channel) =>
   roles = []
 
-  # what remains should be emoji, role pairs
-  pairs = words
-
   #If errors are present log and return
-  errorMessages = Validation.validate_pairs(pairs)
-  if(errorMessages.length > 0)
-    console.log("Error Validating Roles: "+errorMessages)
-    return
+  pairs = Validation.validate_pairs(words)
 
   # Process each role with its emoji
   for i in [0..pairs.length-1]
-    pair = pairs[i].split(",")
-    name = pair[0]
-    emoji = pair[1]
-
-    roles.push Database.find_or_create_role(emoji, name)
+    roles.push Database.find_or_create_role(pairs[i].emoji, pairs[i].name)
 
   # Remove failed roles
   console.log(roles)
