@@ -1,0 +1,2 @@
+SlashCommandBuilder = require('@discordjs/builders')
+

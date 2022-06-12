@@ -105,5 +105,7 @@ dist
 
 .idea/
 .vscode/
-.env
 *.sqlite
+
+# Don't check in generated code
+#lib/
