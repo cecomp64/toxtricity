@@ -47,8 +47,9 @@ client = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
 })
 
+DeployCommands = require('../lib/deploy-commands')
+
 secret = process.env.DISCORD_TOKEN
-my_id = 1234
 
 print_reaction = (emoji, user, author, message) =>
   console.log("Reaction of " + emoji + " from " + user.username + " on " + author.username + "'s message!")
@@ -57,6 +58,8 @@ print_reaction = (emoji, user, author, message) =>
 # Hola, mundo
 client.once('ready', () =>
   console.log('Ready!!!')
+  # Initialize commands globally
+  DeployCommands.register(client)
 
   #await sequelize.sync({ force: true })
   #console.log("All models were synchronized successfully.")
@@ -159,10 +162,17 @@ client.on("messageCreate", (message) =>
     console.log(command)
 
     switch command
-      when 'poll'
-        return 1
+      when 'register'
+        DeployCommands.register(message.guildId)
       when 'roles'
         create_role_assignments(words, message.channel, message.guild)
+)
+
+# Handle slash commands (aka "interactions")
+client.on("interactionCreate", (interaction) =>
+  # Only handle commands
+  return if !interaction.isCommand()
+  console.log(interaction)
 )
 
 # messageReactionAdd
