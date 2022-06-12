@@ -8,3 +8,7 @@ make build
 make run
 ```
 
+# Test
+```
+npm test
+```
