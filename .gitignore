@@ -108,4 +108,4 @@ dist
 *.sqlite
 
 # Don't check in generated code
-#lib/
+lib/
