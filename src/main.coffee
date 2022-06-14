@@ -47,6 +47,8 @@ client = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS]
 })
 
+# Flag to specify whether to re-register commands
+register_commands = true
 DeployCommands = require('../lib/deploy-commands')
 
 secret = process.env.DISCORD_TOKEN
@@ -58,8 +60,9 @@ print_reaction = (emoji, user, author, message) =>
 # Hola, mundo
 client.once('ready', () =>
   console.log('Ready!!!')
+
   # Initialize commands globally
-  DeployCommands.register(client)
+  DeployCommands.register(client) if(register_commands)
 
   #await sequelize.sync({ force: true })
   #console.log("All models were synchronized successfully.")
