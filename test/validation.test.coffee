@@ -1,4 +1,4 @@
-Validation = require("../../lib/validation")
+Validation = require("../src/validation")
 
 words_testcases = [
   {

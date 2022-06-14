@@ -36,11 +36,11 @@
 #  https://discord.js.org/#/docs/discord.js/main/class/Client?scrollTo=e-messageCreate
 #  https://www.npmjs.com/package/discord.js-light
 
-Database = require('../lib/database')
+Database = require('../src/database')
 Role = Database.Role
 RoleMessage = Database.RoleMessage
 
-Validation = require('../lib/validation')
+Validation = require('../src/validation')
 
 Discord = require('discord.js-light')
 client = new Discord.Client({
@@ -49,7 +49,7 @@ client = new Discord.Client({
 
 # Flag to specify whether to re-register commands
 register_commands = true
-DeployCommands = require('../lib/deploy-commands')
+DeployCommands = require('../src/deploy-commands')
 
 secret = process.env.DISCORD_TOKEN
 
