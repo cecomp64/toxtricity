@@ -1,2 +1,2 @@
 require('dotenv').config()
-require('./lib/main');
+require('./lib/main')
