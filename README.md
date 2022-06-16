@@ -28,6 +28,7 @@ npm test
 npm install @danielbayley/jest-preset-coffeescript@2.0.3
 ```
 https://github.com/danielbayley/jest-preset-coffeescript/packages/169769
+https://www.pluralsight.com/guides/install-npm-packages-from-gitgithub
 
 
 # Coffee
