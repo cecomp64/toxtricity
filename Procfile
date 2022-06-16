@@ -1,1 +1,1 @@
-worker: coffee index.coffee --nodejs
+worker: npm start
