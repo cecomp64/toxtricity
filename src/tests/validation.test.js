@@ -2,7 +2,7 @@
 (function() {
   var Validation, words_testcases;
 
-  Validation = require("../src/validation");
+  Validation = require("../validation");
 
   words_testcases = [
     {
